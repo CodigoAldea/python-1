@@ -1,84 +1,60 @@
-import speech_recognition as sr #speech to text
-import pyttsx3 # text  to speech
-import pywhatkit # third parrty app
-import datetime # date nd time
-import wikipedia # wikipedia search
-import pyjokes # jokes
+import speech_recognition as sr # speech to text
+import pyttsx3 # text to speech
+import pywhatkit # third party app
+import datetime # to check the date an time.
+import wikipedia # for searching wikipedia
+import pyjokes # for joke
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
-#voice change
+# voice change
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[0].id)
-#function to output
+engine.setProperty('voice', voices[1].id)
 
+# function to output voice 
 def talk(text):
     engine.say(text)
     engine.runAndWait()
 
-'''def wishme():
-    hour = int(datetime.datetime.now().hour)
-    if hour >= 0 and hour < 12:
-        talk('Good Morning Madam!!')
-
-    elif hour >= 12 and hour < 18:
-        talk('Good Afternoon madam!!')
-
-    else:
-        talk('Good Evening Madam~!!')
-
-    assisname = ('STARK')
-    talk('I am Your personal assistant!')
-    talk(assisname)
-    talk('welcome')
-    talk('How can I help you Madam?')
-
-wishme()'''
-
-def takeCommand():
+# read the command provided
+def take_command():
     try:
-        with sr.Recognizer(device_index=0) as source: #for microphone instance
-           # r.adjust_for_ambient_noise(source,duration=1)                            #ambient noise suppression
-            print('listening...')
-            voice = listener.listen(source) # to listen
-            command = listener.recognize_google(voice) #speech to text
-
+        with sr.Microphone() as source: # to create a microphone instance 
+            print('listning...')
+            voice = listener.listen(source) # to listen 
+            command = listener.recognize_google(voice) # speach to text
+            #if 'tom' in command:
+            #print(command)
     except:
         pass
     return command
-    
-def run():
-    
-    var = takeCommand()
-    print(var)
-    # play songs
-    if 'play' in var:
-        song = var.replace('play','')
-        talk('playing'+song)
-    
-    # time
-    elif 'time' in var :
-        time = datetime.now().strftime('%I:%M %P')
-        talk('the time is '+ time)
 
-    # web search
-    elif 'what is' in var or 'who is' in var :
-        item = var.replace('what is', '')   
-        item = var.replace('who is', '')
+def run_pro():
+    command = take_command()
+    # print(command)
+
+    # play the song 
+    if 'play' in command:
+        song = command.replace('play', '')
+        talk('playing' + song)
+        pywhatkit.playonyt(song)
+    # time
+    elif 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %P') # %I for 12 hour time formate and %p for pm and am
+        talk('the time is ' + time)
+        print('the time is'+ time)
+    # search the web 
+    elif 'what is ' in command:
+        item = command.replace('what is', '')
         info = wikipedia.summary(item, 5)
         talk(info)
-
-    # jokes
-    elif 'joke' in var :
+        print(info)
+    # to get jokes
+    elif 'joke' in command:
         talk(pyjokes.get_joke())
-
-    # opens youtube
-    elif 'open youtube' in var :
-        pywhatkit.playonyt('python')    
-        talk('opening youtube...')
-    
+    # when the condition is not fulfilled
     else :
-        # in case condition isn't fullfilled
-        talk('Sorry! unable to recognize')
+        talk(" didn't got that, please repeat")
+
 while True:
-    run()
+    run_pro()
